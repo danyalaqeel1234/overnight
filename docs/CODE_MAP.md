@@ -46,6 +46,7 @@
 | `tests/test_roster_rules.py` | L3 | 8-step check order, deferred match transfer, query-time loan return |
 | `tests/contract/test_crypto_hmac.py`| L3 | Test Vectors 1 & 2, canonical JSON sorting and UTF-8 encoding |
 | `tests/contract/test_rbac_matrix.py` | L3 | 7 probe routes (`P1`-`P7`), 5 roles, tenant isolation (403), auth tampering (401) |
+| `tests/test_rbac.py` | L3 | 7 probe routes (`P1`-`P7`), 403 vs 404 tenant boundaries, 100 req/10s rate limiting, live FastAPI harness |
 | `tests/contract/test_offline_sync.py`| L3 | Offline sync replay: `appended`, `rebased_append`, `skipped_duplicate`, `server_wins` |
 | `tests/test_fixtures.py` | L1 | Round-robin circle method, Swiss pairings, single & double elimination |
 | `tests/test_sports.py` | L1 | Event-sourced scoring, compensation rollbacks, innings/series limits |
