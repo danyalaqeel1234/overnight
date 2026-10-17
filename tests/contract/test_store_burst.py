@@ -4,6 +4,7 @@ Tests pessimistic locking, zero-overselling, mock payment gateway rollbacks,
 and signed PDF receipt validation.
 """
 
+import os
 import threading
 import time
 import base64
@@ -35,7 +36,7 @@ class InProcessStoreEngine:
         }
         self.orders: Dict[str, Dict[str, Any]] = {}
         self.order_bodies: Dict[str, str] = {}
-        self.salt = "T09D1271f28b2611"
+        self.salt = os.environ.get("DAY1_SALT", "")
 
     def reset(self, stock_map: Dict[str, int]):
         with self.lock:

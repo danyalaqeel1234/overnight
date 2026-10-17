@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import threading
 import pathlib
 from typing import Any
 
@@ -55,6 +56,7 @@ class DBState:
 
         # --- misc ---
         self.current_seed: int = 42
+        self._store_lock = threading.Lock()
 
     def seed_baseline(self, seed: int = 42, custom_stock: dict | None = None) -> None:
         self._reset()

@@ -8,6 +8,7 @@ Verifies:
 - Sorting by queued_at ASC with response in original request order
 """
 
+import os
 import pytest
 from app.api.offline_sync import (
     OfflineSyncEngine,
@@ -18,7 +19,7 @@ from app.api.offline_sync import (
 class TestOfflineSyncContract:
     @pytest.fixture(autouse=True)
     def setup_engine(self):
-        self.engine = OfflineSyncEngine(salt="T09D1271f28b2611")
+        self.engine = OfflineSyncEngine(salt=os.environ.get("DAY1_SALT", "demo-salt"))
 
     def test_offline_sync_happy_path_and_rebase(self):
         """
