@@ -14,8 +14,8 @@
 
 ## 2. Mandatory Hourly Git Push Windows (-2 pts per missed window)
 - [x] **Window 1 (10:45 – 11:45 PKT):** COMPLETED & PUSHED (Commit `f1f1ce4`).
-- [ ] **Window 2 (11:45 – 12:45 PKT):** IN PROGRESS — Deliverable: FastAPI Core + Health + Reset + Crypto + Fixtures + Sports.
-- [ ] **Window 3 (12:45 – 13:45 PKT):** UPCOMING — Deliverable: Standings + Store Concurrency + Roster.
+- [x] **Window 2 (11:45 – 12:45 PKT):** COMPLETED & PUSHED (Commit `33f9a7c`) — FastAPI Core, Health, Reset, Crypto, Fixtures (RR/Swiss/Single/Double), Mystery Sports, 70/70 tests passing, Coverage 89.4%.
+- [ ] **Window 3 (12:45 – 13:45 PKT):** NEXT UP — Deliverable: Standings + Store Concurrency + Roster.
 - [ ] **Window 4 (13:45 – 14:45 PKT):** UPCOMING — Deliverable: RBAC Probes + Offline Sync + Mobile Integration.
 - [ ] **Final Lock (14:45 – 15:00 PKT):** Test suite pass, `COVERAGE.json` >= 85%, final push before 15:05.
 
