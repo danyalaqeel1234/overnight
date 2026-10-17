@@ -1,0 +1,38 @@
+You are acting as an elite competitive systems architect and hackathon strategist.
+We are competing in NaSCon '26 App Dev Competition Part I (Multi-Sport League & Club Operations Platform).
+Sprint deadline: Today 15:00 PKT (Push lock: 15:05 PKT).
+Host environment: 8 GB RAM Windows laptop, Docker Desktop, Python 3.11, FastAPI, React Native / Android.
+DAY1_SALT: T09D1271f28b2611.
+Repo: https://github.com/DANYALAQEEL/Mutators.git
+
+Specification Summary & Core Requirements:
+1. Backend Platform (36 pts, Python Autograder):
+   - Host port 8080 via docker compose up -d --build (startup <= 120s).
+   - /audit/v1/* unthrottled wrapper endpoints matching exact JSON contracts, status codes, error codes.
+   - Dynamic Mystery Sport (POST /audit/v1/sports): Zero hardcoded sport logic (-8 penalty). Models: event, innings, round.
+   - Event Sourcing (POST /audit/v1/events): append-only, sequence, match_version, HMAC-SHA256(DAY1_SALT, id + '|' + canonical_json(payload)), compensating event rollbacks.
+   - Fixture Generation (POST /audit/v1/fixtures): Round-robin (circle method, home/away balance <= 1, withdrawals: void_all, forfeit_remaining), Swiss (Buchholz, rematch-free backtracking, min score diff, 409 NO_VALID_PAIRING), Single Elim (exact power-of-2 seed placement, bye propagation), Double Elim (winners, losers, grand final reset GF1/GF2).
+   - Standings Engine (GET /audit/v1/standings/{league_id}): Rebuilt from event logs, points, 3-way H2H mini-league tie-breaker with restart-on-split, Net Run Rate, deterministic lots (SHA256(seed|league|team)), qualification clinching math.
+   - Concurrency-safe Store (POST /audit/v1/checkout): 20 concurrent threads buying 1 unit of stock -> exactly 1 succeeds (201), 19 fail (409 OUT_OF_STOCK), zero overselling, mock gateway (tok_success, tok_declined, tok_capture_fail), signed PDF receipt (PKR 4500.00 text, valid %PDF, Base64).
+   - Club & Roster (POST /audit/v1/roster/transfer): 8-step validation order, transfer window dates, loans with auto-return (GET /history?as_of=), match-in-progress deferral (state: deferred_until_match_end, blocking_match_id).
+   - 5-Tier RBAC & API Security (POST /audit/v1/rbac-matrix, 7 probe routes P1-P7, tenant isolation 403, /api/v1/ping rate limit 100 req/10s per IP, 150 burst -> >=40 429s).
+   - Offline Sync (POST /audit/v1/offline-sync): action queue replay, conflict resolutions (appended, rebased_append, skipped_duplicate, server_wins).
+   - Unit Test Coverage: COVERAGE.json >= 85% on all 6 backend areas for +10% bonus, run_tests.sh, TRACEABILITY.md.
+
+2. Mobile Application & Desk Check (14 pts):
+   - Pre-built mobile/release/app-release.apk.
+   - 9 required screens (Login, Fixtures, Match detail, Standings, Club profile, Store, Roster management, Scoring entry, Sync status).
+   - Desk check: Airplane mode test, local SQLite queue for scoring & roster actions, force-close/reopen recovery, reconnect auto-sync.
+
+3. Hourly Git Push Windows (-2 pts per missed window):
+   - 10:45-11:45 (CURRENT WINDOW - NEED FIRST PUSH ASAP)
+   - 11:45-12:45
+   - 12:45-13:45
+   - 13:45-14:45
+
+TASK:
+Critically evaluate this blueprint:
+1. What are the highest-risk failure points that could cost points on the autograder or desk check?
+2. What optimizations or simplifications would accelerate execution without sacrificing any requirements or test coverage?
+3. How can we ensure the 20-thread checkout concurrency and 3-way H2H recursion never deadlock or fail under load?
+4. Provide concrete, actionable additions or modifications to ensure a 100% winning score.
