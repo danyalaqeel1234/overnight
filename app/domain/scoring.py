@@ -253,7 +253,7 @@ def add_event(data: dict) -> tuple[int, dict]:
 
     # Append event
     seq = len(events) + 1
-    sig = sign(DAY1_SALT, event_id, data)
+    sig = sign(DAY1_SALT, event_id, payload)
     ev_record = {
         "event_id": event_id,
         "match_id": match_id,

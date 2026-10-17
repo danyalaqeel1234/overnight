@@ -32,11 +32,45 @@ def _generate_pdf(order_id: str, total_minor: int) -> str:
 
 
 def checkout(data: dict) -> tuple[int, dict]:
+    if not isinstance(data, dict):
+        raise AppException("VALIDATION_ERROR", "Invalid request body", {"fields": ["body"]}, 400)
+
     order_id = data.get("order_id")
     customer_id = data.get("customer_id")
-    items = data.get("items", [])
+    items = data.get("items")
     discount_code = data.get("discount_code")
-    payment = data.get("payment", {})
+    payment = data.get("payment")
+
+    bad_fields: set[str] = set()
+    if not isinstance(order_id, str) or not order_id.strip():
+        bad_fields.add("order_id")
+    if not isinstance(customer_id, str) or not customer_id.strip():
+        bad_fields.add("customer_id")
+    if not isinstance(items, list) or len(items) < 1 or len(items) > 10:
+        bad_fields.add("items")
+    if not isinstance(payment, dict) or not isinstance(payment.get("token"), str) or not payment.get("token"):
+        bad_fields.add("payment.token")
+
+    if isinstance(items, list):
+        seen_variants = set()
+        for idx, item in enumerate(items):
+            if not isinstance(item, dict):
+                bad_fields.add(f"items.{idx}")
+                continue
+            vid = item.get("variant_id")
+            qty = item.get("quantity")
+            if not isinstance(vid, str) or not vid:
+                bad_fields.add(f"items.{idx}.variant_id")
+            elif vid in seen_variants:
+                bad_fields.add("items.variant_id")
+            else:
+                seen_variants.add(vid)
+            if not isinstance(qty, int) or isinstance(qty, bool) or qty < 1 or qty > 10:
+                bad_fields.add(f"items.{idx}.quantity")
+
+    if bad_fields:
+        raise AppException("VALIDATION_ERROR", "Validation failed", {"fields": sorted(bad_fields)}, 400)
+
     token = payment.get("token")
     body_canonical = canonical(data)
 
