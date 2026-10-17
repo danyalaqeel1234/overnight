@@ -5,7 +5,7 @@
  */
 
 // Dynamic import or fallback for expo-secure-store
-let expoSecureStore: typeof import('expo-secure-store') | null = null;
+let expoSecureStore: any = null;
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   expoSecureStore = require('expo-secure-store');

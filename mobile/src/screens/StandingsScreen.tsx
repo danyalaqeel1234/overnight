@@ -13,6 +13,8 @@ import { LoadingState } from '../components/LoadingState';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
 import { mockStandings, mockMatches, Match, StandingsEntry } from '../mocks/mockData';
+import { getCachedStandings, cacheStandings } from '../services/cache';
+import { syncService } from '../services/sync';
 
 interface StandingsScreenProps {
   onSelectMatch: (match: Match) => void;
@@ -27,14 +29,37 @@ export const StandingsScreen: React.FC<StandingsScreenProps> = ({
   const [matches, setMatches] = useState<Match[]>(mockMatches);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isFromCache, setIsFromCache] = useState(false);
   const [activeTab, setActiveTab] = useState<'table' | 'matches'>('table');
+
+  // Initialize and populate local cache on mount
+  React.useEffect(() => {
+    cacheStandings('nascon_premier_2026', mockStandings).catch(() => {});
+  }, []);
 
   const handleRefresh = async () => {
     setIsLoading(true);
     setIsError(false);
+
+    // If Airplane Mode or network is unavailable, load from SQLite cache
+    if (syncService.isAirplaneModeActive()) {
+      try {
+        const cached = await getCachedStandings<StandingsEntry[]>('nascon_premier_2026');
+        if (cached && cached.length > 0) {
+          setStandings(cached);
+          setIsFromCache(true);
+          setIsLoading(false);
+          return;
+        }
+      } catch {
+        // Fallback to in-memory
+      }
+    }
+
     setTimeout(() => {
       setStandings(mockStandings);
       setMatches(mockMatches);
+      setIsFromCache(false);
       setIsLoading(false);
     }, 400);
   };
@@ -77,6 +102,16 @@ export const StandingsScreen: React.FC<StandingsScreenProps> = ({
           <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} colors={['#2563EB']} />
         }
       >
+        {/* Offline SQLite Cache Banner */}
+        {isFromCache && (
+          <View style={styles.cacheNoticeBanner}>
+            <Ionicons name="cloud-offline-outline" size={16} color="#B45309" style={{ marginRight: 6 }} />
+            <Text style={styles.cacheNoticeText}>
+              Offline Cache Active: Loaded official standings from local SQLite database.
+            </Text>
+          </View>
+        )}
+
         {/* Live Match Hero Banner */}
         {liveMatch && (
           <View style={styles.heroSection}>
@@ -339,6 +374,24 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     paddingBottom: 36,
+  },
+  cacheNoticeBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+    borderRadius: 12,
+    marginHorizontal: 16,
+    marginTop: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  cacheNoticeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#92400E',
+    flex: 1,
   },
   heroSection: {
     paddingHorizontal: 16,
