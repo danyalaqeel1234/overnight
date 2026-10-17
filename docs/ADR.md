@@ -6,11 +6,11 @@
 ### ADR-001: Mobile Architecture & Client Framework
 * **Status:** Accepted
 * **Context:** The competition requires Android-compatible mobile delivery with rapid screen development, offline caching, and responsive touch targets (>= 48 dp).
-* **Decision:** Selected React Native with Expo SDK 51, Expo Router, and TypeScript.
+* **Decision:** Selected React Native with Expo SDK 57, Expo Router, and TypeScript (aligned for physical Pixel 7 compatibility).
 * **Alternatives Rejected:**
   1. *Flutter:* Rejected due to longer Gradle build times on campus Wi-Fi and lack of shared TypeScript types with web contracts.
   2. *Native Kotlin/Android:* Rejected due to slower multi-screen scaffolding velocity within the strict 4-hour sprint window.
-* **Downside / Trade-offs Accepted:** Accepted reliance on Expo managed workflow and cloud EAS build queues, mitigating by initiating preview builds early and caching SQLite locally.
+* **Downside / Trade-offs Accepted:** Accepted reliance on Expo managed workflow and cloud EAS build queues, mitigating by initiating preview builds early, running local Expo development builds, and caching SQLite locally.
 
 ---
 
