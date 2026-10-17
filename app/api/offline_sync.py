@@ -6,10 +6,13 @@ resolves conflicts, sorts by queued_at ASC, and returns results in request order
 
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
+from fastapi import APIRouter
 import os
 import hmac
 import hashlib
 import json
+
+router = APIRouter()
 
 def canonical_json(obj) -> str:
     return json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False)
@@ -249,3 +252,11 @@ class OfflineSyncEngine:
             server_version=new_v,
             signature=None
         )
+
+
+_engine = OfflineSyncEngine()
+
+
+@router.post("/audit/v1/offline-sync")
+def offline_sync(req: OfflineSyncRequest):
+    return _engine.process_sync(req)

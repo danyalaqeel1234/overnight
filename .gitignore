@@ -13,4 +13,5 @@ dist/
 coverage.json
 coverage_report.json
 orchestrate_claude.py
+orchestrate_codex.py
 prompt_*.txt

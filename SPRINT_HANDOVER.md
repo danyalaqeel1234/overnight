@@ -16,7 +16,7 @@
 - [x] **Window 1 (10:45 – 11:45 PKT):** COMPLETED & PUSHED (Commit `f1f1ce4`).
 - [x] **Window 2 (11:45 – 12:45 PKT):** COMPLETED & PUSHED (Commit `33f9a7c`) — FastAPI Core, Health, Reset, Crypto, Fixtures (RR/Swiss/Single/Double), Mystery Sports, 70/70 tests passing, Coverage 89.4%.
 - [x] **Window 3 (12:45 – 13:45 PKT):** COMPLETED & PUSHED — Standings + H2H Mini-League, Store Concurrency (Pessimistic Locking + PDF receipts), 8-rule Roster Transfers & Loan Returns, Leagues & Event Sourcing (177/177 tests passing, all areas >= 88.5% coverage).
-- [ ] **Window 4 (13:45 – 14:45 PKT):** NEXT UP — Deliverable: RBAC Probes + Offline Sync + Mobile Integration.
+- [x] **Window 4 (13:45 – 14:45 PKT):** COMPLETED & PUSHED — 5-Tier RBAC & 7 Probes, Rolling Rate Limiter on /api/v1/* (100 req/10s), Offline Sync Router, Dockerfile & docker-compose.yml on Port 8080 (214/214 tests passing, all areas >= 88.5%).
 - [ ] **Final Lock (14:45 – 15:00 PKT):** Test suite pass, `COVERAGE.json` >= 85%, final push before 15:05.
 
 ---
