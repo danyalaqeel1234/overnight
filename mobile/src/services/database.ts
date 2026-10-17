@@ -173,7 +173,7 @@ export async function getDatabase(): Promise<DatabaseAdapter> {
       const db = await SQLite.openDatabaseAsync(DB_NAME);
       await initSchema(db);
       dbInstance = db;
-      return dbInstance;
+      return db;
     }
   } catch {
     // expo-sqlite unavailable (Node or test runner)

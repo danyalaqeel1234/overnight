@@ -181,3 +181,5 @@ export const offlineQueue = {
     };
   },
 };
+
+export const enqueueOfflineAction = offlineQueue.enqueueAction.bind(offlineQueue);

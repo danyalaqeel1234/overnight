@@ -93,3 +93,6 @@ export const localCache = {
     }
   },
 };
+
+export const getCachedStandings = localCache.getCachedStandings.bind(localCache);
+export const cacheStandings = localCache.cacheStandings.bind(localCache);
