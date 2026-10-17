@@ -531,3 +531,27 @@ def test_rr_match_id_format():
             assert mid.startswith("RR-L")
             parts = mid.split("-")
             assert len(parts) == 4
+
+
+@pytest.mark.asyncio
+async def test_direct_api_fixtures():
+    import json
+    from unittest.mock import AsyncMock
+    from app.api.fixtures import fixtures
+
+    req = AsyncMock()
+    req.body.return_value = json.dumps({"format": "round_robin", "teams": ["t1", "t2"]}).encode()
+    res = await fixtures(req)
+    assert res.status_code == 200
+
+    req.body.return_value = json.dumps({"format": "swiss", "teams": ["t1", "t2"], "params": {"round": 1}}).encode()
+    res2 = await fixtures(req)
+    assert res2.status_code == 200
+
+    req.body.return_value = json.dumps({"format": "single_elim", "teams": ["t1", "t2"]}).encode()
+    res3 = await fixtures(req)
+    assert res3.status_code == 200
+
+    req.body.return_value = json.dumps({"format": "double_elim", "teams": ["t1", "t2", "t3", "t4"]}).encode()
+    res4 = await fixtures(req)
+    assert res4.status_code == 200

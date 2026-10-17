@@ -220,17 +220,15 @@ class RBACPolicyEngine:
         target_id: str,
         token: Optional[str],
     ) -> Tuple[int, Dict[str, Any]]:
-        """
-        Evaluates authorization probe.
-        Returns: (status_code, body)
-        """
-        if not token or not token.startswith("Bearer "):
-            return 401, {"error": {"code": "UNAUTHENTICATED", "message": "Missing or malformed Authorization header", "details": {}}}
+        from app.core.security import evaluate_probe as sec_eval
+        return sec_eval(probe_id, target_id, token)
 
-        raw_token = token[7:].strip()
-        status, payload, err_code = decode_and_verify_jwt(raw_token)
-        if status != 200 or not payload:
-            return 401, {"error": {"code": err_code or "UNAUTHENTICATED", "message": "Invalid token", "details": {}}}
+    def _old_evaluate_probe(
+        self,
+        probe_id: str,
+        target_id: str,
+        token: Optional[str],
+    ) -> Tuple[int, Dict[str, Any]]:
 
         role = payload.get("role")
         user_tenant = payload.get("tenant_id")
@@ -791,7 +789,8 @@ class TestRBACFastAPILiveEndpoints:
 
     @pytest.fixture(autouse=True)
     def setup_app_client(self):
-        self.app = create_rbac_test_app()
+        from app.main import app as live_app
+        self.app = live_app
         self.client = TestClient(self.app)
         matrix_res = self.client.post("/audit/v1/rbac-matrix")
         assert matrix_res.status_code == 200
