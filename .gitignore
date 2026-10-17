@@ -11,3 +11,8 @@ node_modules/
 dist/
 .DS_Store
 *.log
+.coverage
+coverage.json
+.pytest_cache/
+orchestrate_claude.py
+prompt_*.txt
