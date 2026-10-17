@@ -24,8 +24,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "393d52cc-cd04-4083-85d2-681fee9"
+        "projectId": "d27ed411-e100-47e9-99bd-d73bcc42ff9f"
       }
-    }
+    },
+    "owner": "danyalaqeel"
   }
 }
