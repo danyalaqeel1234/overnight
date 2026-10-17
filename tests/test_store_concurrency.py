@@ -275,3 +275,45 @@ class TestStoreConcurrency:
         })
         assert status2 == 400
         assert body2["error"]["code"] == "INVALID_DISCOUNT_CODE"
+
+    def test_20_thread_concurrent_burst_live_api(self):
+        """
+        Verify 20 simultaneous threads against the live FastAPI app endpoint:
+        POST /audit/v1/checkout on var-jersey-001-M with stock=1.
+        Asserts exactly one 201, nineteen 409 OUT_OF_STOCK, and zero oversell.
+        """
+        from fastapi.testclient import TestClient
+        from app.main import app
+        from app.domain.models import db_state
+
+        client = TestClient(app)
+        db_state.seed_baseline(custom_stock={"var-jersey-001-M": 1})
+
+        barrier = threading.Barrier(20)
+        results = [None] * 20
+
+        def worker(idx: int):
+            payload = {
+                "order_id": f"ord-api-burst-{idx:03d}",
+                "customer_id": f"cust-{idx:03d}",
+                "items": [{"variant_id": "var-jersey-001-M", "quantity": 1}],
+                "payment": {"token": "tok_success"}
+            }
+            barrier.wait()
+            res = client.post("/audit/v1/checkout", json=payload)
+            results[idx] = (res.status_code, res.json())
+
+        threads = [threading.Thread(target=worker, args=(i,)) for i in range(20)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=5.0)
+
+        statuses = [r[0] for r in results]
+        assert statuses.count(201) == 1, f"Expected 1x 201, got {statuses.count(201)}"
+        assert statuses.count(409) == 19, f"Expected 19x 409, got {statuses.count(409)}"
+
+        inv = client.get("/audit/v1/inventory/var-jersey-001-M").json()
+        assert inv["stock"] == 0
+        assert inv["reserved"] == 0
+
