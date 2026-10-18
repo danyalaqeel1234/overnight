@@ -54,6 +54,13 @@ class DBState:
         # --- offline sync ---
         self.offline_actions: dict[str, set] = {}   # device_id -> set of action_ids
 
+        # --- day 2: streaming / QR / guest ---
+        self.qr_mappings: dict[str, dict] = {}
+        self.guest_tokens: dict[str, dict] = {}
+        self.user_carts: dict[str, dict] = {}
+        self.stream_keys: dict[str, dict] = {}
+        self.costream_sessions: dict[str, dict] = {}
+
         # --- misc ---
         self.current_seed: int = 42
         self._store_lock = threading.Lock()
@@ -115,8 +122,93 @@ class DBState:
             ("player-alpha-1", "club-alpha-1"),
             ("player-alpha-2", "club-alpha-2"),
             ("player-beta-1", "club-beta-1"),
+            ("player-beta-2", "club-beta-1"),
         ):
             self.players[pid] = {"player_id": pid, "club_id": cid}
+
+        # match-m1 baseline
+        self.matches["match-m1"] = {
+            "match_id": "match-m1",
+            "sport_id": "football",
+            "league_id": "league-alpha-1",
+            "home_team_id": "club-alpha-1",
+            "away_team_id": "club-alpha-2",
+            "status": "in_progress",
+            "home_score": 1,
+            "away_score": 0,
+        }
+        self.events["match-m1"] = [
+            {
+                "event_id": "ev-seed-m1-init",
+                "match_id": "match-m1",
+                "type": "match_init",
+                "payload": {
+                    "match_id": "match-m1",
+                    "sport_id": "football",
+                    "league_id": "league-alpha-1",
+                    "home_team_id": "club-alpha-1",
+                    "away_team_id": "club-alpha-2",
+                },
+                "sequence": 1,
+                "signature": "",
+                "timestamp": "2026-10-18T10:15:00Z",
+            },
+            {
+                "event_id": "ev-seed-m1-start",
+                "match_id": "match-m1",
+                "type": "match_start",
+                "payload": {},
+                "sequence": 2,
+                "signature": "",
+                "timestamp": "2026-10-18T10:16:00Z",
+            },
+            {
+                "event_id": "ev-seed-m1-score",
+                "match_id": "match-m1",
+                "type": "score",
+                "payload": {
+                    "team_id": "club-alpha-1",
+                    "event_type": "goal",
+                    "player_id": "player-alpha-1",
+                },
+                "sequence": 3,
+                "signature": "",
+                "timestamp": "2026-10-18T10:25:00Z",
+            },
+        ]
+
+        # dynamic QR mappings
+        self.qr_mappings["match-m1"] = {
+            "entity_id": "match-m1",
+            "entity_type": "match",
+            "short_url": "http://localhost:8080/q/m1-live",
+            "short_code": "m1-live",
+            "scan_count": 0,
+        }
+        self.qr_mappings["player-alpha-1"] = {
+            "entity_id": "player-alpha-1",
+            "entity_type": "player",
+            "short_url": "http://localhost:8080/q/p-alpha-1",
+            "short_code": "p-alpha-1",
+            "scan_count": 0,
+        }
+        self.qr_mappings["club-alpha-1"] = {
+            "entity_id": "club-alpha-1",
+            "entity_type": "club",
+            "short_url": "http://localhost:8080/q/c-alpha-1",
+            "short_code": "c-alpha-1",
+            "scan_count": 0,
+        }
+
+        # guest tokens
+        self.guest_tokens["guest_anon_tok_7721"] = {
+            "token": "guest_anon_tok_7721",
+            "role": "guest",
+            "merged": False,
+        }
+
+        # registered user carts
+        self.user_carts["player-alpha-1"] = {"items": []}
 
     def is_ready(self) -> bool:
         return bool(self.sports) and bool(self.tenants)

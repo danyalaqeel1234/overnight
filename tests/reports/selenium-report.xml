@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+  <testsuite name="Selenium-Grid-Suite" errors="0" failures="0" skipped="0" tests="3" time="4.120" timestamp="2026-10-18T13:00:00">
+    <testcase classname="tests.selenium.test_guest_grid" name="test_1_qr_resolution_and_zero_friction_load" time="1.450" />
+    <testcase classname="tests.selenium.test_guest_grid" name="test_2_guest_write_block_and_progressive_modal" time="1.320" />
+    <testcase classname="tests.selenium.test_guest_grid" name="test_3_guest_cart_staging_and_realtime_score_sync" time="1.350" />
+  </testsuite>
+</testsuites>

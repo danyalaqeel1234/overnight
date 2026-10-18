@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   View,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
+  Linking,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -18,6 +19,7 @@ import { ProductDetailModal } from './src/screens/ProductDetailModal';
 import { ReceiptModal } from './src/screens/ReceiptModal';
 import { RosterScreen } from './src/screens/RosterScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { CoStreamScreen } from './src/screens/CoStreamScreen';
 
 import { Match, Product } from './src/mocks/mockData';
 import { useCartStore } from './src/store/cartStore';
@@ -36,9 +38,44 @@ type TabType = 'standings' | 'store' | 'roster' | 'settings';
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('standings');
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const [selectedCoStreamId, setSelectedCoStreamId] = useState<string | null>(null);
   const [selectedProductForModal, setSelectedProductForModal] = useState<Product | null>(null);
 
   const { lastReceipt, clearReceipt, selectProduct } = useCartStore();
+
+  useEffect(() => {
+    const handleUrl = (url: string | null) => {
+      if (!url) return;
+      if (url.includes('cs-session-') || url.includes('/stream/')) {
+        const parts = url.split('/');
+        const sessionId = parts[parts.length - 1];
+        setSelectedMatch(null);
+        setSelectedCoStreamId(sessionId || 'cs-session-101');
+      } else if (url.includes('match-')) {
+        const parts = url.split('/');
+        const matchId = parts[parts.length - 1];
+        const fallbackMatch: Match = {
+          id: matchId,
+          homeTeam: 'Club Alpha 1',
+          awayTeam: 'Club Alpha 2',
+          homeScore: 1,
+          awayScore: 0,
+          status: 'in_progress',
+          minute: "64'",
+          league: 'NaSCon Super League',
+          stadium: 'FAST Arena',
+          pinnedProduct: undefined,
+          timeline: [],
+        };
+        setSelectedCoStreamId(null);
+        setSelectedMatch(fallbackMatch);
+      }
+    };
+
+    Linking.getInitialURL().then(handleUrl);
+    const sub = Linking.addEventListener('url', ({ url }) => handleUrl(url));
+    return () => sub.remove();
+  }, []);
 
   const handleOpenMatch = (match: Match) => {
     setSelectedMatch(match);
@@ -80,7 +117,12 @@ export default function App() {
         <View style={styles.container}>
           {/* Main Content Area based on Tab and Sub-routes */}
           <View style={styles.contentArea}>
-            {activeTab === 'standings' && (
+            {selectedCoStreamId ? (
+              <CoStreamScreen
+                sessionId={selectedCoStreamId}
+                onBack={() => setSelectedCoStreamId(null)}
+              />
+            ) : activeTab === 'standings' && (
               selectedMatch ? (
                 <MatchDetailScreen
                   match={selectedMatch}
@@ -134,6 +176,7 @@ export default function App() {
               style={[styles.tabItem, activeTab === 'standings' && styles.tabItemActive]}
               onPress={() => {
                 setSelectedMatch(null);
+                setSelectedCoStreamId(null);
                 setActiveTab('standings');
               }}
               activeOpacity={0.75}
@@ -158,7 +201,11 @@ export default function App() {
 
             <TouchableOpacity
               style={[styles.tabItem, activeTab === 'store' && styles.tabItemActive]}
-              onPress={() => setActiveTab('store')}
+              onPress={() => {
+                setSelectedMatch(null);
+                setSelectedCoStreamId(null);
+                setActiveTab('store');
+              }}
               activeOpacity={0.75}
               accessibilityRole="tab"
               accessibilityState={{ selected: activeTab === 'store' }}
@@ -181,7 +228,11 @@ export default function App() {
 
             <TouchableOpacity
               style={[styles.tabItem, activeTab === 'roster' && styles.tabItemActive]}
-              onPress={() => setActiveTab('roster')}
+              onPress={() => {
+                setSelectedMatch(null);
+                setSelectedCoStreamId(null);
+                setActiveTab('roster');
+              }}
               activeOpacity={0.75}
               accessibilityRole="tab"
               accessibilityState={{ selected: activeTab === 'roster' }}
@@ -204,7 +255,11 @@ export default function App() {
 
             <TouchableOpacity
               style={[styles.tabItem, activeTab === 'settings' && styles.tabItemActive]}
-              onPress={() => setActiveTab('settings')}
+              onPress={() => {
+                setSelectedMatch(null);
+                setSelectedCoStreamId(null);
+                setActiveTab('settings');
+              }}
               activeOpacity={0.75}
               accessibilityRole="tab"
               accessibilityState={{ selected: activeTab === 'settings' }}

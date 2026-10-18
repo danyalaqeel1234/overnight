@@ -1,0 +1,10 @@
+node_modules/
+.expo/
+dist-android/
+release/
+android/
+ios/
+.credentials/
+credentials.json
+*.log
+.env*

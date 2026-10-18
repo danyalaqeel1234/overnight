@@ -36,6 +36,16 @@ async def reset(request: Request):
         custom_stock = stock
 
     db_state.seed_baseline(seed=seed, custom_stock=custom_stock)
+    from app.domain.streaming import streaming_domain
+    from app.domain.costream import costream_domain
+    from app.domain.qr_guest import qr_guest_domain
+    from app.domain.moderation_dlq import moderation_dlq_domain
+    from app.domain.observability import observability_domain
+    streaming_domain.reset()
+    costream_domain.reset()
+    qr_guest_domain.reset()
+    moderation_dlq_domain.reset()
+    observability_domain.reset()
 
     snap = db_state.stock_snapshot()
     return JSONResponse(

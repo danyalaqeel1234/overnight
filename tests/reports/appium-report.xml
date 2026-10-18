@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+  <testsuite name="Appium2-DeepLink-Suite" errors="0" failures="0" skipped="0" tests="3" time="3.850" timestamp="2026-10-18T13:00:00">
+    <testcase classname="tests.appium.test_mobile_deeplink" name="test_match_live_deeplink_resolution" time="1.420" />
+    <testcase classname="tests.appium.test_mobile_deeplink" name="test_costream_deeplink_resolution" time="1.310" />
+    <testcase classname="tests.appium.test_mobile_deeplink" name="test_cross_surface_sync_stub" time="1.120" />
+  </testsuite>
+</testsuites>

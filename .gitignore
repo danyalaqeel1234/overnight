@@ -15,3 +15,16 @@ coverage_report.json
 orchestrate_claude.py
 orchestrate_codex.py
 prompt_*.txt
+.env
+.env.*
+!.env.example
+.cache/
+.tools/
+tmp/
+mobile/android/local.properties
+*.keystore
+*.jks
+.tools/
+mobile/dist-android/
+mobile/credentials.json
+mobile/.credentials/

@@ -9,8 +9,23 @@
     "ios": {
       "supportsTablet": true
     },
+    "scheme": "nascon",
     "android": {
       "package": "com.mutators.mobile",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ],
+          "data": [
+            {
+              "scheme": "nascon"
+            }
+          ]
+        }
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",

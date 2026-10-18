@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+.cache
+.tools
+tmp
+mobile
+__pycache__
+.pytest_cache
+*.apk

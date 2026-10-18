@@ -36,7 +36,7 @@ export const MatchDetailScreen: React.FC<MatchDetailScreenProps> = ({
   };
 
   return (
-    <View style={styles.screenWrapper}>
+    <View style={styles.screenWrapper} testID="match-live-screen" accessibilityLabel="match-live-screen">
       {/* Top Navigation Bar */}
       <View style={styles.navBar}>
         <TouchableOpacity

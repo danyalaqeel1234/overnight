@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NaSCon '26 Live</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0b0f19;color:#f8fafc;font-family:system-ui,sans-serif;min-height:100vh}
+    a{color:#38bdf8}
+    h1{font-size:1.5rem;padding:1rem;color:#f8fafc}
+
+    /* Player */
+    #video-wrapper{background:#111827;aspect-ratio:16/9;max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:center;border-radius:8px;overflow:hidden}
+    #video-wrapper video{width:100%;height:100%}
+
+    /* Score banner */
+    #score-banner{background:#1e293b;border:1px solid #334155;border-radius:6px;padding:12px 24px;text-align:center;font-size:1.25rem;font-weight:700;max-width:900px;margin:12px auto;color:#f8fafc}
+
+    /* Merch */
+    #merch-section{max-width:900px;margin:16px auto;background:#1e293b;border-radius:8px;padding:16px;display:flex;align-items:center;gap:16px}
+    #merch-section img{width:64px;height:64px;border-radius:4px;object-fit:cover}
+    .merch-info{flex:1}
+    .merch-info h3{font-size:1rem;color:#f8fafc}
+    .merch-info p{font-size:.875rem;color:#94a3b8}
+
+    /* Cart */
+    #cart-status{max-width:900px;margin:0 auto 8px;text-align:right;font-size:.875rem;color:#94a3b8}
+    button{cursor:pointer;border:none;border-radius:6px;font-size:.875rem;font-weight:600;min-height:48px;min-width:48px;padding:12px 16px;transition:background .15s}
+    button:focus-visible{outline:3px solid #38bdf8;outline-offset:2px}
+    #add-to-cart-btn{background:#0ea5e9;color:#f8fafc}
+    #add-to-cart-btn:hover{background:#0284c7}
+
+    /* Chat */
+    #chat-section{max-width:900px;margin:16px auto;background:#1e293b;border-radius:8px;overflow:hidden}
+    #chat-section h2{padding:12px 16px;font-size:1rem;border-bottom:1px solid #334155}
+    #chat-messages{height:240px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+    .chat-msg{background:#0f172a;border-radius:4px;padding:8px 12px;font-size:.875rem;color:#cbd5e1}
+    #chat-input-row{display:flex;gap:8px;padding:12px;border-top:1px solid #334155}
+    #chat-input{flex:1;background:#0f172a;color:#f8fafc;border:1px solid #334155;border-radius:6px;padding:12px 16px;font-size:.875rem;min-height:48px}
+    #chat-input::placeholder{color:#475569}
+    #chat-input:focus{outline:3px solid #38bdf8;outline-offset:2px}
+    #chat-send{background:#38bdf8;color:#0b0f19}
+    #chat-send:hover{background:#0ea5e9}
+
+    /* Modal */
+    #auth-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:100}
+    #auth-modal[aria-modal="true"]{display:flex}
+    .modal-box{background:#1e293b;border-radius:12px;padding:32px;max-width:400px;width:90%;text-align:center}
+    .modal-box h2{font-size:1.25rem;margin-bottom:12px;color:#f8fafc}
+    .modal-box p{font-size:.875rem;color:#94a3b8;margin-bottom:20px}
+    .modal-actions{display:flex;gap:12px;justify-content:center}
+    .modal-actions button{background:#38bdf8;color:#0b0f19;min-width:100px}
+    #modal-close{background:#334155;color:#f8fafc}
+  </style>
+</head>
+<body>
+  <h1>NaSCon '26 Live</h1>
+
+  <!-- Video Player -->
+  <div data-testid="guest-video-player" id="video-wrapper" role="region" aria-label="Live match stream">
+    <video
+      id="hls-video"
+      controls
+      autoplay
+      muted
+      playsinline
+      aria-label="Match livestream video"
+      style="width:100%;height:100%"
+    >
+      <track kind="captions" label="English" srclang="en"/>
+      Your browser does not support HTML5 video.
+    </video>
+  </div>
+
+  <!-- Live Score Banner -->
+  <div data-testid="live-score-banner" id="score-banner" role="status" aria-live="polite" aria-label="Live match score">
+    1 - 0
+  </div>
+
+  <!-- Cart status line -->
+  <div id="cart-status" aria-label="Cart item count">
+    Cart: <span data-testid="guest-cart-count" id="cart-count" aria-label="Items in guest cart">0</span> item(s)
+  </div>
+
+  <!-- Pinned Merch Card -->
+  <div data-testid="pinned-merch-card" id="merch-card" role="region" aria-label="Featured merchandise">
+    <img src="" alt="Official Match Jersey" aria-hidden="true"/>
+    <div class="merch-info">
+      <h3>Official Match Jersey (Size L)</h3>
+      <p>PKR 4,500 &middot; prod-jersey-001 / var-jersey-001-L</p>
+    </div>
+    <button
+      data-testid="add-to-guest-cart-btn"
+      id="add-to-cart-btn"
+      aria-label="Add Official Match Jersey Size L to guest cart"
+      type="button"
+    >
+      Add to Cart
+    </button>
+  </div>
+
+  <!-- Chat Section -->
+  <section id="chat-section" aria-label="Live chat">
+    <h2>Live Chat</h2>
+    <div
+      data-testid="chat-message-list"
+      id="chat-messages"
+      role="log"
+      aria-live="polite"
+      aria-label="Chat messages"
+      tabindex="0"
+    ></div>
+    <div id="chat-input-row">
+      <input
+        data-testid="chat-input-field"
+        id="chat-input"
+        type="text"
+        placeholder="Say something..."
+        aria-label="Chat message input"
+        autocomplete="off"
+        maxlength="500"
+      />
+      <button
+        data-testid="chat-send-btn"
+        id="chat-send"
+        type="button"
+        aria-label="Send chat message"
+      >Send</button>
+    </div>
+  </section>
+
+  <!-- Progressive Auth Modal (hidden on initial load) -->
+  <div
+    data-testid="progressive-auth-modal"
+    id="auth-modal"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="modal-title"
+    style="display: none;"
+  >
+    <div class="modal-box">
+      <h2 id="modal-title">Sign in to chat</h2>
+      <p>Your cart is saved. Create an account or log in to join the conversation and complete your purchase.</p>
+      <div class="modal-actions">
+        <button type="button" aria-label="Log in to your account" onclick="window.location.href='/login'">Log In</button>
+        <button type="button" aria-label="Create a new account" onclick="window.location.href='/register'">Register</button>
+        <button id="modal-close" type="button" aria-label="Close sign-in prompt" onclick="hideModal()">Later</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- config --------------------------------------------------------
+    const matchId = document.currentScript
+      ? (document.currentScript.dataset.matchId || "{{ match_id }}")
+      : "{{ match_id }}";
+    const sessionId = "{{ session_id }}";
+    const GUEST_TOKEN = "guest_anon_tok_7721";
+
+    // ---- score sync via WebSocket -------------------------------------
+    function connectScoreWS() {
+      const ws = new WebSocket("ws://" + window.location.host + "/ws/matches/" + matchId);
+      ws.onmessage = function(event) {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.score !== undefined) {
+            document.querySelector('[data-testid="live-score-banner"]').textContent = data.score;
+          } else if (data.home_score !== undefined && data.away_score !== undefined) {
+            document.querySelector('[data-testid="live-score-banner"]').textContent =
+              data.home_score + " - " + data.away_score;
+          } else if (data.type === "score_update" || data.event_type === "goal") {
+            const banner = document.querySelector('[data-testid="live-score-banner"]');
+            if (data.text) banner.textContent = data.text;
+          }
+        } catch(e) {}
+      };
+      ws.onclose = function() {
+        // Fallback to SSE after WS disconnect
+        connectScoreSSE();
+      };
+    }
+
+    function connectScoreSSE() {
+      const sse = new EventSource("/api/v1/matches/" + matchId + "/stream");
+      sse.onmessage = function(event) {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.score !== undefined) {
+            document.querySelector('[data-testid="live-score-banner"]').textContent = data.score;
+          } else if (data.home_score !== undefined && data.away_score !== undefined) {
+            document.querySelector('[data-testid="live-score-banner"]').textContent =
+              data.home_score + " - " + data.away_score;
+          }
+        } catch(e) {}
+      };
+    }
+
+    // ---- guest cart ---------------------------------------------------
+    let cartCount = 0;
+
+    document.getElementById("add-to-cart-btn").addEventListener("click", function() {
+      cartCount++;
+      document.querySelector('[data-testid="guest-cart-count"]').textContent = String(cartCount);
+
+      fetch("/api/v1/guest/cart", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          guest_token: GUEST_TOKEN,
+          items: Array(cartCount).fill({variant_id: "var-jersey-001-L", quantity: 1})
+        })
+      });
+    });
+
+    // ---- chat ---------------------------------------------------------
+    function showModal() {
+      const modal = document.querySelector('[data-testid="progressive-auth-modal"]');
+      modal.style.display = "";
+      modal.setAttribute("aria-modal", "true");
+      modal.querySelector("button").focus();
+    }
+
+    function hideModal() {
+      const modal = document.querySelector('[data-testid="progressive-auth-modal"]');
+      modal.style.display = "none";
+      modal.setAttribute("aria-modal", "false");
+    }
+
+    document.getElementById("chat-send").addEventListener("click", function() {
+      const input = document.getElementById("chat-input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      fetch("/api/v1/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + GUEST_TOKEN
+        },
+        body: JSON.stringify({message: text, guest_token: GUEST_TOKEN})
+      }).then(function(res) {
+        if (res.status === 403) {
+          // Do NOT append message – show auth modal
+          input.value = "";
+          showModal();
+        } else {
+          const list = document.querySelector('[data-testid="chat-message-list"]');
+          const el = document.createElement("div");
+          el.className = "chat-msg";
+          el.textContent = text;
+          list.appendChild(el);
+          list.scrollTop = list.scrollHeight;
+          input.value = "";
+        }
+      });
+    });
+
+    // Allow Enter key to send chat
+    document.getElementById("chat-input").addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById("chat-send").click();
+      }
+    });
+
+    // ---- init ---------------------------------------------------------
+    try { connectScoreWS(); } catch(e) { connectScoreSSE(); }
+  </script>
+</body>
+</html>

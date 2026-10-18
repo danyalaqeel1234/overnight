@@ -13,5 +13,12 @@ def sign(salt: str, id_: str, payload: Any) -> str:
     return hmac.new(salt.encode("utf-8"), msg, hashlib.sha256).hexdigest()
 
 
+import os
+
+def sign_day2(id_: str, payload: Any) -> str:
+    salt = os.environ.get("DAY2_SALT", "")
+    return sign(salt, id_, payload)
+
+
 def lots_key(seed: int, league_id: str, team_id: str) -> str:
     return hashlib.sha256(f"{seed}|{league_id}|{team_id}".encode("utf-8")).hexdigest()

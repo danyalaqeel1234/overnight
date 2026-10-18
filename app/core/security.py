@@ -25,6 +25,7 @@ _player_club_map = {
     "player-alpha-1": "club-alpha-1",
     "player-alpha-2": "club-alpha-2",
     "player-beta-1": "club-beta-1",
+    "player-beta-2": "club-beta-1",
 }
 
 _league_tenant_map = {

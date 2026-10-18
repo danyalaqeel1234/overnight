@@ -17,6 +17,15 @@ from app.api.checkout import router as checkout_router
 from app.api.rbac import router as rbac_router
 from app.api.ping import router as ping_router
 from app.api.offline_sync import router as offline_sync_router
+from app.api.stream_key import router as stream_key_router
+from app.api.costream import router as costream_router
+from app.api.qr import router as qr_router
+from app.api.guest import router as guest_router
+from app.api.moderation import router as moderation_router
+from app.api.metrics import router as metrics_router
+from app.api.privacy import router as privacy_router
+from app.api.ws import router as ws_router
+from app.api.web import router as web_router
 
 
 @asynccontextmanager
@@ -47,7 +56,10 @@ async def rate_limit_middleware(request: Request, call_next):
     return await call_next(request)
 
 
+from app.core.guest_guard import GuestWriteGuardMiddleware
+
 app.add_middleware(BodySizeLimitMiddleware)
+app.add_middleware(GuestWriteGuardMiddleware)
 register_exception_handlers(app)
 
 app.include_router(health_router)
@@ -62,3 +74,12 @@ app.include_router(checkout_router)
 app.include_router(rbac_router)
 app.include_router(ping_router)
 app.include_router(offline_sync_router)
+app.include_router(stream_key_router)
+app.include_router(costream_router)
+app.include_router(qr_router)
+app.include_router(guest_router)
+app.include_router(moderation_router)
+app.include_router(metrics_router)
+app.include_router(privacy_router)
+app.include_router(ws_router)
+app.include_router(web_router)

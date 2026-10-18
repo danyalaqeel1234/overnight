@@ -46,6 +46,10 @@ def project_match(match_id: str) -> dict | None:
             status = "in_progress"
         elif t == "match_end":
             status = "completed"
+        elif t in ("match_postponed", "match_cancelled", "match_abandoned"):
+            status = t.replace("match_", "")
+        elif t == "status_change":
+            status = p.get("status", status)
         elif t == "score":
             tid = p["team_id"]
             etype = p["event_type"]
@@ -230,6 +234,9 @@ def add_event(data: dict) -> tuple[int, dict]:
             team_data = state["home"] if team_id == match["home_team_id"] else state["away"]
             if team_data["score"] >= needed:
                 raise AppException("SERIES_ALREADY_DECIDED", "Series already decided.", {}, 409)
+    elif etype in ("match_postponed", "match_cancelled", "match_abandoned") or (etype == "status_change" and payload.get("status") in ("postponed", "cancelled", "abandoned")):
+        if status not in ("upcoming", "in_progress"):
+            raise AppException("ILLEGAL_TRANSITION", f"Cannot change status from '{status}'.", {}, 409)
     elif etype == "discipline":
         if status != "in_progress":
             raise AppException("MATCH_NOT_IN_PROGRESS", "Match is not in progress.", {}, 409)

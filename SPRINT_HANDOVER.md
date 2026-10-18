@@ -5,7 +5,7 @@
 ---
 
 ## 1. Core Competition Parameters
-- **Active Secret Salt:** `DAY1_SALT=T09D1271f28b2611` (Read strictly from environment; never committed into code).
+- **Active Secret Salt:** `DAY1_SALT=<provided at runtime only>` (Read strictly from environment; never committed into code).
 - **GitHub Repository:** `https://github.com/DANYALAQEEL/Mutators.git` (Branch: `main`).
 - **Sprint Deadline:** Saturday, Oct 17, 15:00:00 PKT (Final push lock: 15:05:00 PKT).
 - **Desk Check Slot:** 15:15 PKT (10-minute live demo on real Android device).

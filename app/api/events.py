@@ -18,6 +18,25 @@ async def post_event(request: Request):
     if not isinstance(data, dict):
         raise AppException("VALIDATION_ERROR", "Validation error", {"fields": []}, 400)
     status_code, result = add_event(data)
+    if status_code in (200, 201):
+        match_id = data.get("match_id")
+        if match_id:
+            proj = project_match(match_id)
+            if proj:
+                h = proj["home"]["score"]
+                a = proj["away"]["score"]
+                from app.core.realtime import realtime_hub
+                await realtime_hub.broadcast(
+                    f"match:{match_id}",
+                    {
+                        "type": "score_update",
+                        "match_id": match_id,
+                        "status": proj["status"],
+                        "score": {"home": h, "away": a},
+                        "display": f"{h} - {a}",
+                        "seq": result.get("sequence", 1),
+                    },
+                )
     return JSONResponse(status_code=status_code, content=result)
 
 
